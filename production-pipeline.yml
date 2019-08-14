@@ -10,7 +10,6 @@ trigger:
       - ReadMe.md
 variables:
   docker-hub-endpoint: 'https://index.docker.io/v1'
-  image-name: tfx-development
   tag: lts
 steps:
 - script: 'docker build -f ./Dockerfile -t $(docker-account)/$(image-name):$(tag) .'
