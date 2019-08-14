@@ -1,0 +1,25 @@
+pool:
+  name: Hosted Ubuntu 1604
+trigger:
+  batch: true
+  branches:
+    include: 
+      - tag/lts
+  paths:
+    exclude:
+      - ReadMe.md
+variables:
+  docker-hub-endpoint: 'https://index.docker.io/v1'
+  image-name: tfx-development
+  tag: lts
+steps:
+- script: 'docker build -f ./Dockerfile -t $(docker-account)/$(image-name):$(tag) .'
+  displayName: 'Build TFX development image'
+- script: |
+    echo "$(docker-pass)" | docker login $(docker-hub-endpoint) -u $(docker-account) --password-stdin
+    docker push $(docker-account)/$(image-name):$(tag)
+  displayName: 'Push image to Docker hub'
+- script: 'docker image rm -f $(docker-account)/$(image-name):$(tag)'
+  displayName: 'Cleanup local image'
+- script: 'docker logout $(docker-hub-endpoint)'
+  displayName: 'Log out of Docker account'
